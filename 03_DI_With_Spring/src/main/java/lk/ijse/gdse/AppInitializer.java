@@ -1,5 +1,6 @@
 package lk.ijse.gdse;
 
+import lk.ijse.gdse.bean.Boy;
 import lk.ijse.gdse.bean.SpringBean;
 import lk.ijse.gdse.config.AppConfig;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -10,8 +11,9 @@ public class AppInitializer {
         context.register(AppConfig.class);
         context.refresh();
 
-        SpringBean bean = context.getBean(SpringBean.class);
-        System.out.println("BeanID : " + bean);
+        Boy boy = context.getBean(Boy.class);
+        System.out.println(boy);
+        boy.chatWithGirl();
 
         context.registerShutdownHook();
     }

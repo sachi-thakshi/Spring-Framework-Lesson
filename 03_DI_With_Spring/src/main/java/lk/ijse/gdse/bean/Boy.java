@@ -1,34 +1,50 @@
 package lk.ijse.gdse.bean;
 
-public class Boy {
-    // -------------------->>> 01. property injection
-//    Girl girl = new Girl();
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
-//    public void chatWithGirl() {
-//        girl.chat();
-//    }
+@Component
+public class Boy implements DisposableBean, BeanNameAware, BeanFactoryAware, ApplicationContextAware, InitializingBean {
 
-    // -------------------->>> 02.setter method through injection
-//    Girl girl;
-//    public Boy(Girl girl) {
-//        this.girl = girl;
-//    }
-//    public void chatWithGirl(){
-//        Boy boy = new Boy(new Girl());
-//        girl.chat();
-//    }
+  @Autowired
+  @Qualifier("girl1")
+  Agreement girl;
 
-    // -------------------->>> 03.constructor through injection
-//    Girl girl;
-//    public void SetterMethod(Girl girl) {
-//        this.girl = girl;
-//    }
-//    public void chatWithGirl(){
-//        Boy boy = new Boy();
-//        boy.SetterMethod(new Girl());
-//        girl.chat();
-//    }
+  public Boy(){
+      System.out.println("Boy constructor");
+  }
+  public void chatWithGirl() {
+//      Girl girl = new Girl();
+      girl.chat();
+  }
 
-    // -------------------->>> 04.interface through injection
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        System.out.println("setBeanFactory Boy");
+    }
 
+    @Override
+    public void setBeanName(String name) {
+        System.out.println("setBeanName Boy");
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        System.out.println("Boy destroy");
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        System.out.println("Boy afterPropertiesSet");
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        System.out.println("Boy applicationContext");
+    }
 }
