@@ -3,6 +3,7 @@ package lk.ijse.gdse;
 import lk.ijse.gdse.bean.Boy;
 import lk.ijse.gdse.bean.SpringBean;
 import lk.ijse.gdse.config.AppConfig;
+import lk.ijse.gdse.di.Test2;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class AppInitializer {
@@ -11,9 +12,8 @@ public class AppInitializer {
         context.register(AppConfig.class);
         context.refresh();
 
-        Boy boy = context.getBean(Boy.class);
-        System.out.println(boy);
-        boy.chatWithGirl();
+        Test2 bean = context.getBean(Test2.class);
+        bean.calledHelloMethod();
 
         context.registerShutdownHook();
     }
