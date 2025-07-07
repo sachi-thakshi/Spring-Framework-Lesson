@@ -25,8 +25,8 @@ public class JobController {
 
     @PutMapping("/update")
     public String updateJob(@RequestBody JobDTO jobDTO) {
-        JobDTO updatedJob = jobService.updateJob(jobDTO);
-        return "Job updated successfully";
+        jobService.updateJob(jobDTO);
+        return "Job Updated";
     }
 
     @GetMapping("getall")
