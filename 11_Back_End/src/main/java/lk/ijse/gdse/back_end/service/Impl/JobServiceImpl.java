@@ -7,6 +7,9 @@ import lk.ijse.gdse.back_end.service.JobService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,9 +39,8 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public JobDTO updateJob(JobDTO jobDTO) {
-        Job updatedJob = jobRepository.save(modelMapper.map(jobDTO, Job.class));
-        return modelMapper.map(updatedJob, JobDTO.class);
+    public void updateJob(JobDTO jobDTO) {
+        jobRepository.save(modelMapper.map(jobDTO, Job.class));
     }
 
     @Override
@@ -56,6 +58,20 @@ public class JobServiceImpl implements JobService {
     public List<JobDTO> getAllJobsByKeyword(String keyword) {
         List<Job> allJobs = jobRepository.findJobsByJobTitleContainingIgnoreCase(keyword);
         return modelMapper.map(allJobs, new TypeToken<List<JobDTO>>(){}.getType());
+    }
+
+    @Override
+    public Page<JobDTO> getAllJobsWithPaging(int page, int perPage, String keyword, String direction, String sort) {
+        Page<Job> jobPage;
+
+        if (direction.equalsIgnoreCase("asc")) {
+            jobPage = jobRepository.findJobDataWithPaging(keyword, PageRequest.of(page, perPage, Sort.by(Sort.Direction.ASC, sort)));
+        } else {
+            jobPage = jobRepository.findJobDataWithPaging(keyword, PageRequest.of(page, perPage, Sort.by(Sort.Direction.DESC, sort)));
+        }
+
+        // Map Page<Job> -> Page<JobDTO>
+        return jobPage.map(job -> modelMapper.map(job, JobDTO.class));
     }
 }
 
