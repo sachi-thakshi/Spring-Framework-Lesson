@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class JobDTO {
 
-    private int jobId;
+    private Integer jobId;
     private String jobTitle;
     private String company;
     private String location;

@@ -2,6 +2,7 @@ package lk.ijse.gdse.back_end.service.Impl;
 
 import lk.ijse.gdse.back_end.dto.JobDTO;
 import lk.ijse.gdse.back_end.entity.Job;
+import lk.ijse.gdse.back_end.exceptions.ResourceNotFound;
 import lk.ijse.gdse.back_end.repository.JobRepository;
 import lk.ijse.gdse.back_end.service.JobService;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,9 @@ public class JobServiceImpl implements JobService {
     @Override
     public void saveJob(JobDTO jobDTO) {
 
+        if (jobDTO.getJobId() == null){
+            throw new ResourceNotFound("Resource Not Found");
+        }
         jobRepository.save(modelMapper.map(jobDTO,Job.class));
 
         // created bean class in the Application.java
