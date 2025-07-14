@@ -26,7 +26,7 @@ public class JobServiceImpl implements JobService {
     public void saveJob(JobDTO jobDTO) {
 
         if (jobDTO.getJobId() == null){
-            throw new ResourceNotFound("Resource Not Found");
+            throw new IllegalArgumentException("JobDTO cannot be null.");
         }
         jobRepository.save(modelMapper.map(jobDTO,Job.class));
 
@@ -44,23 +44,49 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public void updateJob(JobDTO jobDTO) {
-        jobRepository.save(modelMapper.map(jobDTO, Job.class));
+
+        if (jobDTO==null||jobDTO.getJobId()==null){
+            throw new IllegalArgumentException("Job Id cannot be null");
+        }
+
+        jobRepository.findById(jobDTO.getJobId()).orElseThrow(
+                ()->new ResourceNotFound("Job Not Found"));
+
+        jobRepository.save(modelMapper.map(jobDTO,Job.class));
     }
 
     @Override
     public List<JobDTO> getAllJobs() {
         List<Job> allJobs=jobRepository.findAll();
+
+        if (allJobs.isEmpty()){
+            throw new ResourceNotFound("No Job Found");
+        }
         return modelMapper.map(allJobs, new TypeToken<List<JobDTO>>(){}.getType());
     }
 
     @Override
     public void changeJobStatus(String jobId) {
+
+        if (jobId==null){
+            throw new IllegalArgumentException("Job Id cannot be null");
+        }
+
         jobRepository.updateJobStatus(jobId);
     }
 
     @Override
     public List<JobDTO> getAllJobsByKeyword(String keyword) {
+
+        if (keyword==null){
+            throw new IllegalArgumentException("Keyword cannot be null");
+        }
+
         List<Job> allJobs = jobRepository.findJobsByJobTitleContainingIgnoreCase(keyword);
+
+        if (allJobs.isEmpty()){
+            throw new ResourceNotFound("No Job Found");
+        }
         return modelMapper.map(allJobs, new TypeToken<List<JobDTO>>(){}.getType());
     }
 
