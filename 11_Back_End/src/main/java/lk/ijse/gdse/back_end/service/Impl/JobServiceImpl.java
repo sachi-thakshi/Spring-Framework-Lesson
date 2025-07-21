@@ -6,6 +6,7 @@ import lk.ijse.gdse.back_end.exceptions.ResourceNotFound;
 import lk.ijse.gdse.back_end.repository.JobRepository;
 import lk.ijse.gdse.back_end.service.JobService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.data.domain.Page;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class JobServiceImpl implements JobService {
@@ -26,6 +28,7 @@ public class JobServiceImpl implements JobService {
     public void saveJob(JobDTO jobDTO) {
 
         if (jobDTO.getJobId() == null){
+            log.info("Job Id is null");
             throw new IllegalArgumentException("JobDTO cannot be null.");
         }
         jobRepository.save(modelMapper.map(jobDTO,Job.class));
@@ -62,6 +65,7 @@ public class JobServiceImpl implements JobService {
         if (allJobs.isEmpty()){
             throw new ResourceNotFound("No Job Found");
         }
+
         return modelMapper.map(allJobs, new TypeToken<List<JobDTO>>(){}.getType());
     }
 
