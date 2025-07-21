@@ -22,7 +22,7 @@ public class JobDTO {
     private String location;
     @NotNull(message = "Type is required")
     private String type;
-    @Size(min = 10, message = "Job Description should be at least 10 characters long")
+//    @Size(min = 10, message = "Job Description should be at least 10 characters long")
     private String jobDescription;
     private String status;
 }

@@ -51,12 +51,14 @@ public class JobController {
 
     @PutMapping("update")
     public ResponseEntity <APIResponse<String>> updateJob(@RequestBody @Valid JobDTO jobDTO) {
+        if (jobDTO == null || jobDTO.getJobId() == null) {
+            return ResponseEntity.badRequest()
+                    .body(new APIResponse<>(400, "Job ID is required for update", null));
+        }
+
         jobService.updateJob(jobDTO);
-        return ResponseEntity.ok(new APIResponse<>(
-                200,
-                "Job List Fetched Successfully",
-                null
-        ));
+
+        return ResponseEntity.ok(new APIResponse<>(200, "Job updated successfully", null));
 //        return "Job Updated";
     }
 
@@ -71,7 +73,7 @@ public class JobController {
     }
 
     @PatchMapping("status/{id}")
-    private ResponseEntity <APIResponse <String>> changeJobStatus(@PathVariable("id") String jobId){
+    private ResponseEntity <APIResponse <String>> changeJobStatus(@PathVariable("id") Integer jobId){
         System.out.println("JobId: " + jobId);
         jobService.changeJobStatus(jobId);
         return ResponseEntity.ok(

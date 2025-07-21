@@ -9,7 +9,7 @@ public interface JobService {
     void saveJob(JobDTO jobDTO);
     void updateJob(JobDTO jobDTO);
     List<JobDTO> getAllJobs();
-    void changeJobStatus(String jobId);
+    void changeJobStatus(Integer jobId);
     List<JobDTO> getAllJobsByKeyword(String keyword);
 
     Page<JobDTO> getAllJobsWithPaging(int page, int perPage, String keyword, String direction, String sort);

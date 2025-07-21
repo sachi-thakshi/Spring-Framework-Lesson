@@ -27,7 +27,7 @@ public class JobServiceImpl implements JobService {
     @Override
     public void saveJob(JobDTO jobDTO) {
 
-        if (jobDTO.getJobId() == null){
+        if (jobDTO == null){
             log.info("Job Id is null");
             throw new IllegalArgumentException("JobDTO cannot be null.");
         }
@@ -70,7 +70,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public void changeJobStatus(String jobId) {
+    public void changeJobStatus(Integer jobId) {
 
         if (jobId==null){
             throw new IllegalArgumentException("Job Id cannot be null");

@@ -263,8 +263,14 @@ function editJob(job) {
 // Update job
 function updateJob() {
     console.log($("#editJobId").val())
+    const jobId = $("#editJobId").val();
+    if (!jobId) {
+        alert("Job ID is missing!");
+        return;
+    }
+
     const job = {
-        jobId: $("#editJobId").val(),
+        jobId: Number(jobId),
         jobTitle: $("#editJobTitle").val(),
         company: $("#editCompanyName").val(),
         location: $("#editJobLocation").val(),
@@ -284,7 +290,11 @@ function updateJob() {
         },
         error: function(err) {
             console.error("Error updating job:", err);
-            showError("Failed to update job. Please try again.");
+            if (err.responseJSON && err.responseJSON.message) {
+                showError("Failed to update job: " + err.responseJSON.message);
+            } else {
+                showError("Failed to update job. Please try again.");
+            }
         }
     });
 }

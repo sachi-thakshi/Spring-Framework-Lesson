@@ -19,7 +19,7 @@ public interface JobRepository extends JpaRepository<Job,Integer> {
     @Query("UPDATE Job j SET j.status = " +
             "CASE WHEN j.status = 'ACTIVE' THEN 'DEACTIVATED' ELSE 'ACTIVE' END " +
             "WHERE j.jobId = :id")
-    void updateJobStatus(@Param("id") String id);
+    void updateJobStatus(@Param("id") Integer id);
 
     List<Job> findJobsByJobTitleContainingIgnoreCase(String jobTitle);
 
