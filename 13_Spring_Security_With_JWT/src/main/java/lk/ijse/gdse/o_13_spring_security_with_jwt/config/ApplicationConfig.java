@@ -14,11 +14,11 @@ import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
-public class ApplicationConfig {
+public class ApplicationConfig { // bean register karanwa ape nowana ewa
     private final UserRepository userRepository;
 
     @Bean
-    public UserDetailsService userDetailsService() {
+    public UserDetailsService userDetailsService() { // register wunu userwa aragena bean ekak widihata register karanwa
         return username ->
                 userRepository.findByUsername(username)
                         .map(user -> new org.springframework.security.core.userdetails.User(
@@ -31,7 +31,7 @@ public class ApplicationConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() { // Bcrypt password encoder
         return new BCryptPasswordEncoder();
     }
 }

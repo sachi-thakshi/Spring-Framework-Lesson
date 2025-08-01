@@ -21,16 +21,16 @@ public class AuthService {
     private final JwtUtil jwtUtil;
 
     public AuthResponseDTO authenticate(AuthDTO authDTO){
-        User user = userRepository.findByUsername(authDTO.getUsername())
+        User user = userRepository.findByUsername(authDTO.getUsername()) // user innwada balanwa nathnm exception ekak throw karanwa global exception ekak thiyena nisa
                             .orElseThrow(()->new UsernameNotFoundException(" Username Not Found"));
 
-        if (!passwordEncoder.matches(authDTO.getPassword(),user.getPassword())){
+        if (!passwordEncoder.matches(authDTO.getPassword(),user.getPassword())){ // user dena password ekai user obj eke password ekai same da balanwa
             throw new BadCredentialsException("Incorrect Password");
         }
 
-        String token = jwtUtil.generateToken(user.getUsername());
+        String token = jwtUtil.generateToken(user.getUsername()); // token generate
 
-        return new AuthResponseDTO(token);
+        return new AuthResponseDTO(token,user.getUsername());
     }
 
     public String register(RegisterDTO registerDTO){

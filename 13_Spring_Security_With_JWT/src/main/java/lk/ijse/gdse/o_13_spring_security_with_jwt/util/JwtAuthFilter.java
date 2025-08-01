@@ -19,7 +19,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
-    private final UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService; // spring security walin enne
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -39,14 +39,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
-            if (jwtUtil.validateToken(jwtToken)){
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+            if (jwtUtil.validateToken(jwtToken)){ // token eka validate da balanawa
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken( // spring security walinmai denne api hadanne na
                         userDetails,
                         null,
                         userDetails.getAuthorities()
                 );
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                SecurityContextHolder.getContext().setAuthentication(authToken); // SecurityContextHolder -> session eka store karala thiyagannwa
             }
         }
         filterChain.doFilter(request, response);

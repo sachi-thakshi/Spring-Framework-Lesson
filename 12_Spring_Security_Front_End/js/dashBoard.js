@@ -1,5 +1,73 @@
-$(document).ready(function() {
-    // Sample data - in a real app, this would come from an API
+document.addEventListener("DOMContentLoaded", function () {
+    // Utility: Parse JWT token safely
+    function parseJwt(token) {
+        console.log("Token from localStorage:", token);
+        if (!token) {
+            throw new Error("No token provided to parseJwt");
+        }
+
+        const parts = token.split('.');
+        if (parts.length !== 3) {
+            throw new Error("Invalid JWT token format");
+        }
+
+        const base64Url = parts[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(
+            atob(base64)
+                .split('')
+                .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                .join('')
+        );
+
+        return JSON.parse(jsonPayload);
+    }
+
+    // Utility: Redirect user to login with message
+    function redirectToLogin(message) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Authentication Required',
+            text: message,
+            confirmButtonText: 'Login'
+        }).then(() => {
+            localStorage.clear();
+            window.location.href = "../index.html";
+        });
+    }
+
+    // Get token from localStorage
+    const token = localStorage.getItem('token');
+    if (!token) {
+        console.error("No token found in localStorage!");
+        return redirectToLogin("Please log in to continue.");
+    }
+
+    // Parse and validate token
+    let payload;
+    try {
+        payload = parseJwt(token);
+    } catch (error) {
+        console.error("Token parsing error:", error);
+        return redirectToLogin("Invalid token. Please log in again.");
+    }
+
+    const now = Math.floor(Date.now() / 1000);
+    if (!payload.exp || payload.exp < now) {
+        return redirectToLogin("Session expired. Please log in again.");
+    }
+
+    // Display username
+    const username = localStorage.getItem("username") || payload.sub || "User";
+    const userLabel = document.getElementById("usernameDisplay");
+    if (userLabel) {
+        userLabel.textContent = username;
+    }
+    else  {
+       console.warn("Username label not found in DOM. Please check your HTML markup.");
+    }
+
+    // -------- JOB MANAGEMENT --------
     let jobs = [
         {
             id: 1,
@@ -30,7 +98,7 @@ $(document).ready(function() {
         }
     ];
 
-    // Render jobs table
+    // Render jobs table rows
     function renderJobs(jobsToRender) {
         const tbody = $('#jobsTableBody');
         tbody.empty();
@@ -38,35 +106,34 @@ $(document).ready(function() {
         jobsToRender.forEach((job, index) => {
             const statusClass = job.status === "Active" ? "badge-active" : "badge-inactive";
             const row = `
-                        <tr>
-                            <td>${index + 1}</td>
-                            <td>${job.title}</td>
-                            <td>${job.company}</td>
-                            <td>${job.location}</td>
-                            <td>${job.type}</td>
-                            <td><span class="badge badge-status ${statusClass}">${job.status}</span></td>
-                            <td>
-                                <button class="btn btn-sm btn-action btn-edit" data-id="${job.id}" data-bs-toggle="modal" data-bs-target="#editJobModal">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-action btn-toggle" data-id="${job.id}">
-                                    <i class="fas fa-power-off"></i>
-                                </button>
-                                <button class="btn btn-sm btn-action btn-delete" data-id="${job.id}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>
-                    `;
+        <tr>
+          <td>${index + 1}</td>
+          <td>${job.title}</td>
+          <td>${job.company}</td>
+          <td>${job.location}</td>
+          <td>${job.type}</td>
+          <td><span class="badge badge-status ${statusClass}">${job.status}</span></td>
+          <td>
+            <button class="btn btn-sm btn-action btn-edit" data-id="${job.id}" data-bs-toggle="modal" data-bs-target="#editJobModal">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-action btn-toggle" data-id="${job.id}">
+              <i class="fas fa-power-off"></i>
+            </button>
+            <button class="btn btn-sm btn-action btn-delete" data-id="${job.id}">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      `;
             tbody.append(row);
         });
     }
 
-    // Initial render
     renderJobs(jobs);
 
-    // Search functionality
-    $('#searchInput').on('keyup', function() {
+    // Search filter
+    $('#searchInput').on('keyup', function () {
         const searchTerm = $(this).val().toLowerCase();
         const filteredJobs = jobs.filter(job =>
             job.title.toLowerCase().includes(searchTerm) ||
@@ -78,7 +145,7 @@ $(document).ready(function() {
     });
 
     // Add new job
-    $('#addJobForm').on('submit', function(e) {
+    $('#addJobForm').on('submit', function (e) {
         e.preventDefault();
 
         const newJob = {
@@ -94,7 +161,6 @@ $(document).ready(function() {
         jobs.push(newJob);
         renderJobs(jobs);
 
-        // Reset form and close modal
         $(this).trigger('reset');
         $('#addJobModal').modal('hide');
 
@@ -107,8 +173,8 @@ $(document).ready(function() {
         });
     });
 
-    // Edit job - populate modal
-    $(document).on('click', '.btn-edit', function() {
+    // Edit job - fill modal fields
+    $(document).on('click', '.btn-edit', function () {
         const jobId = $(this).data('id');
         const job = jobs.find(j => j.id === jobId);
 
@@ -122,8 +188,8 @@ $(document).ready(function() {
         }
     });
 
-    // Update job
-    $('#editJobForm').on('submit', function(e) {
+    // Update job after edit
+    $('#editJobForm').on('submit', function (e) {
         e.preventDefault();
 
         const jobId = parseInt($('#editJobId').val());
@@ -152,8 +218,8 @@ $(document).ready(function() {
         }
     });
 
-    // Toggle job status
-    $(document).on('click', '.btn-toggle', function() {
+    // Toggle job status Active/Inactive
+    $(document).on('click', '.btn-toggle', function () {
         const jobId = $(this).data('id');
         const jobIndex = jobs.findIndex(j => j.id === jobId);
 
@@ -172,12 +238,12 @@ $(document).ready(function() {
     });
 
     // Delete job
-    $(document).on('click', '.btn-delete', function() {
+    $(document).on('click', '.btn-delete', function () {
         const jobId = $(this).data('id');
 
         Swal.fire({
             title: 'Are you sure?',
-            text: "You won't be able to revert this!",
+            text: "This job will be permanently deleted.",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
@@ -188,12 +254,9 @@ $(document).ready(function() {
                 jobs = jobs.filter(j => j.id !== jobId);
                 renderJobs(jobs);
 
-                Swal.fire(
-                    'Deleted!',
-                    'The job posting has been deleted.',
-                    'success'
-                );
+                Swal.fire('Deleted!', 'The job has been removed.', 'success');
             }
         });
     });
+
 });

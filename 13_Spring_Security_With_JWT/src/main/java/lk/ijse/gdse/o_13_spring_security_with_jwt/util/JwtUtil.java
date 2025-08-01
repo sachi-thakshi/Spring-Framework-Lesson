@@ -24,7 +24,7 @@ public class JwtUtil {
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS256).compact();
     }
 
-    public String extractUsername(String token) {
+    public String extractUsername(String token) { // token eka deela userwa gannwa
         return Jwts.parserBuilder()
                 .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes()))
                 .build()

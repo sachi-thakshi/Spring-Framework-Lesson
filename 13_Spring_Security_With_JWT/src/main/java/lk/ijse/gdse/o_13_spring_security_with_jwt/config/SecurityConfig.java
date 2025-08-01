@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,7 +17,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableMethodSecurity // authorization check
+@EnableMethodSecurity // authorization check -> method ekn method ekata apply wenne
+//@EnableWebSecurity // role base na ekata uda eka oni
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final UserDetailsService userDetailsService;
@@ -25,18 +27,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception { // SecurityFilterChain -> checking requests
-        http.csrf(AbstractHttpConfigurer::disable)
+        http.csrf(AbstractHttpConfigurer::disable) // csrf-> Cross-Site Request Forgery disable karanwa
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/auth/**").permitAll().anyRequest().authenticated())
+                        auth.requestMatchers("/auth/**").permitAll().anyRequest().authenticated()) // request karapu ewa balanwa
 
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // session eka create wena policy eka
+                //STATELESS -> store karanne na
 
-                .authenticationProvider(authenticationProvider())
+                .authenticationProvider(authenticationProvider()) // daoAuthenticationProvider ekata userge details set karanawa
 
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // token eka thiyenawada balanna hadapu filter eka add karanawa
 
-        return http.build();
+        return http.build(); // http security obj eka bulid karanwa
     }
 
     @Bean
